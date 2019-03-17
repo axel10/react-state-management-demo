@@ -1,16 +1,38 @@
-import * as React from "react";
-import { render } from "react-dom";
+import { List } from './components/List'
+import { Actions } from './types/actions'
+import { IRootState, StateProvider } from './utils/baseContext'
+import { ITestState } from './utils/types/test'
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 
-import "./styles.css";
+function PokemonInfo () {
+  const initState: IRootState = {
+    test: {
+      list: ['1']
+    }
+  }
 
-function App() {
+  const testReducer = (state: ITestState, action: Actions) => {
+    console.log(state, action)
+    switch (action.type) {
+      case 'push':
+        state.list.push(action.payload)
+        break
+      default:
+        return state
+    }
+    return { ...state }
+  }
+
+  const mainReducer = ({ test }, action) => ({
+    test: testReducer(test, action)
+  })
+
   return (
-    <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!!!!!!</h2>
-    </div>
-  );
+    <StateProvider initialState={initState} reducer={mainReducer}>
+      <List/>
+    </StateProvider>
+  )
 }
 
-const rootElement = document.getElementById("root");
-render(<App />, rootElement);
+ReactDOM.render(<PokemonInfo/>, document.getElementById('root'))
